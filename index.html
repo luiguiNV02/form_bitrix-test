@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Inscripción Neumann</title>
+    
+    <!-- Librerías Externas -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        :root { --primary: #6a1b9a; --secondary: #004680; }
+
+        body {
+            background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), 
+                        url('https://bitrix24public.com/baltic.bitrix24.es/docs/pub/7d67c28887490ed8b6279de3f5fc8061/showPreview/?&token=5t3e659zc8yr');
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px 0;
+        }
+
+        .card-lead {
+            width: 92%;
+            max-width: 420px;
+            background: #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header-img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-bottom: 4px solid var(--primary);
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        @media (max-width: 400px) {
+            .card-body { padding: 1.5rem; }
+            .btn-send { padding: 12px !important; font-size: 0.9rem !important; }
+        }
+
+        .form-title {
+            color: var(--secondary);
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+            text-transform: uppercase;
+        }
+
+        .form-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #444;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #ced4da;
+            font-size: 16px;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(106, 27, 154, 0.15);
+        }
+
+        .btn-send {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            width: 100%;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-send:active { transform: scale(0.98); }
+
+        .wa-footer {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #25d366;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 10px;
+            transition: background 0.3s;
+        }
+
+        .wa-footer:hover { background: rgba(37, 211, 102, 0.1); }
+    </style>
+</head>
+<body>
+
+<div class="card-lead">
+    <img src="https://bitrix24public.com/baltic.bitrix24.es/docs/pub/91b448f15dcdff5af3313969f226e7c0/showPreview/?&token=cjoqvl51vwyh" class="header-img" alt="Admisión Neumann">
+    
+    <div class="card-body">
+        <h5 class="form-title">Registro de Admisión</h5>
+        <form id="leadForm">
+            <div class="mb-3">
+                <label class="form-label">Nombre Completo</label>
+                <input type="text" id="nombre" class="form-control" autocomplete="name" required>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Número de Celular</label>
+                <input type="tel" id="telefono" class="form-control" autocomplete="tel" required>
+            </div>
+            <button type="submit" class="btn btn-send" id="btnSubmit">Enviar Registro</button>
+        </form>
+
+        <a onclick="trackClickAndRedirect('Click WA Directo')" class="wa-footer">
+            <i class="fab fa-whatsapp"></i> ¿Deseas conversar ahora mismo?
+        </a>
+    </div>
+</div>
+
+<script>
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzySJINUFttQonhOkh8Uj0SptgzAFKBcFas6pzc7DIAfRvDD1mSBR3t8K2RgitmCYJy/exec'; 
+    const WA_URL = 'https://wa.link/6t5dim';
+
+    // CAPTURAR EL ORIGEN DE LA URL (Ej: ?id=RadioUno)
+    const urlParams = new URLSearchParams(window.location.search);
+    const ORIGEN_DINAMICO = urlParams.get('id') || 'Lead organico';
+
+    function trackClickAndRedirect(label) {
+        fetch(SCRIPT_URL, { 
+            method: 'POST', 
+            mode: 'no-cors', 
+            body: JSON.stringify({ action: "track_click", label: label + " (" + ORIGEN_DINAMICO + ")" }) 
+        });
+        window.location.href = WA_URL;
+    }
+
+    document.getElementById('leadForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const btn = document.getElementById('btnSubmit');
+        const nombre = document.getElementById('nombre').value;
+        const telefono = document.getElementById('telefono').value;
+
+        btn.disabled = true;
+        btn.innerText = "PROCESANDO...";
+
+        Swal.fire({
+            title: 'Enviando...',
+            text: 'Estamos procesando tu solicitud',
+            allowOutsideClick: false,
+            didOpen: () => { Swal.showLoading(); }
+        });
+
+        try {
+            await fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ 
+                    nombre: nombre, 
+                    telefono: telefono,
+                    origen: ORIGEN_DINAMICO // Enviar el origen detectado
+                })
+            });
+            showSuccessModal();
+        } catch (error) {
+            showSuccessModal(); 
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "ENVIAR REGISTRO";
+            document.getElementById('leadForm').reset();
+        }
+    });
+
+    function showSuccessModal() {
+        Swal.fire({
+            title: '¡Registrado!',
+            html: 'En breve un asesor académico se contactará contigo.<br><br><b>¿Deseas conversar por WhatsApp ahora?</b>',
+            icon: 'success',
+            showCancelButton: true,
+            confirmButtonText: '<i class="fab fa-whatsapp"></i> Chatear ahora',
+            cancelButtonText: 'Cerrar',
+            confirmButtonColor: '#25d366',
+            cancelButtonColor: '#6c757d',
+            allowOutsideClick: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: "track_click", label: "Click WA Post-Registro (" + ORIGEN_DINAMICO + ")" }) });
+                window.location.href = WA_URL;
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
