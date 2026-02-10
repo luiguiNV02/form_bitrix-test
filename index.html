@@ -11,16 +11,22 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
-        :root { --primary: #6a1b9a; --secondary: #004680; }
+        :root { 
+            --primary: #6a1b9a; 
+            --secondary: #004680; 
+            --input-bg: #f8f9fa;
+            --orange-alert: #ff5722;
+            --error-bg: #fff5f5;
+        }
 
         body {
             background: url('https://cdn.bitrix24.es/b15495391/landing/073/07345d1126fdd491d03c959ce795a96f/portada_a6400637_1x.webp');
             background-size: cover;
-            background-position: center right; /* Ajustado para que la chica siempre sea visible */
+            background-position: center right;
             background-attachment: fixed;
             display: flex;
             align-items: center;
-            justify-content: center; /* Centrado base */
+            justify-content: center;
             min-height: 100vh;
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
@@ -29,24 +35,17 @@
 
         .card-lead {
             width: 92%;
-            max-width: 400px;
+            max-width: 450px;
             background: #fff;
-            border-radius: 20px;
+            border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 15px 40px rgba(0,0,0,0.5);
             animation: fadeIn 0.6s ease-out;
-            /* Transición suave para cambios de posición */
             transition: all 0.3s ease; 
         }
 
-        /* 🚀 DESPLAZAMIENTO A LA IZQUIERDA (Para PC/Laptops) */
         @media (min-width: 992px) {
-            body {
-                justify-content: center; 
-            }
-            .card-lead {
-                margin-right: 460px; /* Empuja el formulario a la izquierda del centro */
-            }
+            .card-lead { margin-right: 450px; }
         }
 
         @keyframes fadeIn {
@@ -58,76 +57,122 @@
             width: 100%;
             height: auto;
             display: block;
-            border-bottom: 4px solid var(--primary);
+            border-bottom: 1px solid #eee;
         }
 
-        .card-body {
-            padding: 2rem;
-        }
+        .card-body { padding: 2.5rem 2rem; }
 
-        @media (max-width: 400px) {
-            .card-body { padding: 1.5rem; }
-            .btn-send { padding: 12px !important; font-size: 0.9rem !important; }
-        }
+        .form-header { text-align: center; margin-bottom: 25px; }
+        .form-title { font-weight: 700; font-size: 1.7rem; color: #1a1a1a; margin-bottom: 5px; }
+        .form-subtitle { color: #666; font-size: 1rem; }
 
-        .form-title {
-            color: var(--secondary);
-            font-weight: 800;
-            text-align: center;
-            margin-bottom: 1.5rem;
-            font-size: 1.25rem;
-            text-transform: uppercase;
-        }
-
-        .form-label {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: #444;
-            margin-bottom: 0.5rem;
+        /* 🚀 ESTILOS PARA FLOATING LABELS */
+        .input-group-custom {
+            position: relative;
+            margin-bottom: 22px;
+            background-color: var(--input-bg);
+            border-radius: 6px;
+            transition: all 0.2s;
         }
 
         .form-control {
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid #ced4da;
+            background-color: transparent; /* El fondo lo da el contenedor */
+            border: 1px solid transparent;
+            border-radius: 6px;
+            padding: 24px 16px 10px 16px; /* Espacio arriba para la etiqueta flotante */
             font-size: 16px;
+            transition: all 0.2s;
+            height: 60px;
         }
 
         .form-control:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 0.25rem rgba(106, 27, 154, 0.15);
+            background-color: #fff;
+            border-color: #ddd;
+            box-shadow: none;
+            outline: none;
+        }
+
+        .form-label {
+            position: absolute;
+            top: 18px; /* Posición inicial (dentro del campo) */
+            left: 16px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #999;
+            margin-bottom: 0;
+            display: block;
+            pointer-events: none; /* Permite clickear el input a través del texto */
+            transition: all 0.2s ease;
+        }
+
+        /* Asterisco siempre rojo */
+        .asterisk { color: #ff4d4d; font-weight: bold; margin-left: 2px; }
+
+        /* Estado Flotante: Cuando el input tiene foco O tiene texto escrito */
+        .form-control:focus ~ .form-label,
+        .form-control:not(:placeholder-shown) ~ .form-label {
+            top: 6px;
+            font-size: 12px;
+            color: #777;
+        }
+
+        /* Validación visual estilo imagen */
+        .is-invalid-custom {
+            background-color: var(--error-bg) !important;
+            border-color: #ffcfcf !important;
+        }
+
+        .error-toast {
+            position: absolute;
+            background: var(--orange-alert);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            top: 100%;
+            left: 10px;
+            margin-top: -6px;
+            z-index: 10;
+            display: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .error-toast::after {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 15px;
+            border-width: 6px;
+            border-style: solid;
+            border-color: transparent transparent var(--orange-alert) transparent;
         }
 
         .btn-send {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: var(--primary);
             color: white;
-            padding: 14px;
+            padding: 16px;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             width: 100%;
             font-weight: 700;
-            text-transform: uppercase;
+            font-size: 1.1rem;
             margin-top: 10px;
-            transition: all 0.3s ease;
+            transition: background 0.3s;
         }
 
-        .btn-send:active { transform: scale(0.98); }
+        .btn-send:hover { background: #4a148c; color: white; }
 
         .wa-footer {
             display: block;
             text-align: center;
-            margin-top: 20px;
+            margin-top: 25px;
             color: #25d366;
             text-decoration: none;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-weight: 700;
             cursor: pointer;
-            padding: 10px;
-            border-radius: 10px;
-            transition: background 0.3s;
         }
-
-        .wa-footer:hover { background: rgba(37, 211, 102, 0.1); }
     </style>
 </head>
 <body>
@@ -136,30 +181,41 @@
     <img src="https://bitrix24public.com/baltic.bitrix24.es/docs/pub/91b448f15dcdff5af3313969f226e7c0/showPreview/?&token=cjoqvl51vwyh" class="header-img" alt="Admisión Neumann">
     
     <div class="card-body">
-        <h5 class="form-title">Registro de Admisión</h5>
-        <form id="leadForm">
-            <div class="mb-3">
-                <label class="form-label">Nombre Completo</label>
-                <input type="text" id="nombre" class="form-control" autocomplete="name" required>
+        <div class="form-header">
+            <h2 class="form-title">¡Bienvenido a Neumann!</h2>
+            <p class="form-subtitle">Solicita más información aquí y te contactaremos</p>
+        </div>
+
+        <form id="leadForm" novalidate>
+            <div class="input-group-custom">
+                <input type="text" id="nombre" class="form-control" placeholder=" " autocomplete="name">
+                <label class="form-label">Nombres <span class="asterisk">*</span></label>
+                <div class="error-toast" id="error-nombre">
+                    <i class="fas fa-exclamation-triangle"></i> El campo es obligatorio
+                </div>
             </div>
-            <div class="mb-3">
-                <label class="form-label">Número de Celular</label>
-                <input type="tel" id="telefono" class="form-control" autocomplete="tel" required>
+
+            <div class="input-group-custom">
+                <input type="tel" id="telefono" class="form-control" placeholder=" " autocomplete="tel">
+                <label class="form-label">Celular para Whatsapp <span class="asterisk">*</span></label>
+                <div class="error-toast" id="error-telefono">
+                    <i class="fas fa-exclamation-triangle"></i> El campo es obligatorio
+                </div>
             </div>
 
             <!-- 🛑 CAMPOS FUTUROS (OCULTOS POR AHORA) -->
             <div id="camposExtras" style="display: none;">
-                <div class="mb-3">
-                    <label class="form-label">Correo Electrónico</label>
-                    <input type="email" id="correo" class="form-control" placeholder="ejemplo@correo.com">
+                <div class="input-group-custom">
+                    <input type="email" id="correo" class="form-control" placeholder=" ">
+                    <label class="form-label">Correo Electrónico <span class="asterisk">*</span></label>
                 </div>
-                <div class="mb-4">
-                    <label class="form-label">DNI / Documento</label>
-                    <input type="text" id="dni" class="form-control">
+                <div class="input-group-custom">
+                    <input type="text" id="dni" class="form-control" placeholder=" ">
+                    <label class="form-label">DNI / Documento <span class="asterisk">*</span></label>
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-send" id="btnSubmit">Enviar Registro</button>
+            <button type="submit" class="btn btn-send" id="btnSubmit">Conocer más</button>
         </form>
 
         <a onclick="trackClickAndRedirect('Click WA Directo')" class="wa-footer">
@@ -169,7 +225,6 @@
 </div>
 
 <script>
-    // URL de tu Apps Script con la nueva lógica de "Cola_Pendientes"
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzySJINUFttQonhOkh8Uj0SptgzAFKBcFas6pzc7DIAfRvDD1mSBR3t8K2RgitmCYJy/exec'; 
     const WA_URL = 'https://wa.link/6t5dim';
 
@@ -185,14 +240,50 @@
         window.location.href = WA_URL;
     }
 
+    function validarFormulario() {
+        let esValido = true;
+        ['nombre', 'telefono'].forEach(id => {
+            const input = document.getElementById(id);
+            const parent = input.parentElement; // El contenedor gris
+            const error = document.getElementById('error-' + id);
+            if (input.value.trim() === "") {
+                parent.classList.add('is-invalid-custom');
+                error.style.display = 'block';
+                esValido = false;
+            } else {
+                parent.classList.remove('is-invalid-custom');
+                error.style.display = 'none';
+            }
+        });
+        return esValido;
+    }
+
+    document.querySelectorAll('.form-control').forEach(input => {
+        // Validación al perder el foco (clic fuera)
+        input.addEventListener('blur', function() {
+            const parent = this.parentElement;
+            const toast = document.getElementById('error-' + this.id);
+            if (this.value.trim() === "") {
+                parent.classList.add('is-invalid-custom');
+                if(toast) toast.style.display = 'block';
+            }
+        });
+
+        // Quitar error al empezar a escribir
+        input.addEventListener('input', function() {
+            this.parentElement.classList.remove('is-invalid-custom');
+            const toast = document.getElementById('error-' + this.id);
+            if(toast) toast.style.display = 'none';
+        });
+    });
+
     document.getElementById('leadForm').addEventListener('submit', async function(e) {
         e.preventDefault();
-        
+        if (!validarFormulario()) return;
+
         const btn = document.getElementById('btnSubmit');
         const nombre = document.getElementById('nombre').value;
         const telefono = document.getElementById('telefono').value;
-        
-        // Capturar extras (aunque estén ocultos)
         const correo = document.getElementById('correo').value || "No proporcionado";
         const dni = document.getElementById('dni').value || "No proporcionado";
 
@@ -207,7 +298,6 @@
         });
 
         try {
-            // El fetch ahora es más rápido porque el backend solo guarda en "Cola"
             await fetch(SCRIPT_URL, {
                 method: 'POST',
                 body: JSON.stringify({ 
@@ -220,10 +310,10 @@
             });
             showSuccessModal();
         } catch (error) {
-            showSuccessModal(); // Mostramos éxito igual para no frustrar al usuario
+            showSuccessModal(); 
         } finally {
             btn.disabled = false;
-            btn.innerText = "ENVIAR REGISTRO";
+            btn.innerText = "CONOCER MÁS";
             document.getElementById('leadForm').reset();
         }
     });
