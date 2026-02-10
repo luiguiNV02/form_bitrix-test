@@ -14,28 +14,39 @@
         :root { --primary: #6a1b9a; --secondary: #004680; }
 
         body {
-            background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), 
-                        url('https://bitrix24public.com/baltic.bitrix24.es/docs/pub/7d67c28887490ed8b6279de3f5fc8061/showPreview/?&token=5t3e659zc8yr');
+            background: url('https://cdn.bitrix24.es/b15495391/landing/073/07345d1126fdd491d03c959ce795a96f/portada_a6400637_1x.webp');
             background-size: cover;
-            background-position: center center;
+            background-position: center right; /* Ajustado para que la chica siempre sea visible */
             background-attachment: fixed;
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: center; /* Centrado base */
             min-height: 100vh;
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
-            padding: 20px 0;
+            padding: 20px;
         }
 
         .card-lead {
             width: 92%;
-            max-width: 420px;
+            max-width: 400px;
             background: #fff;
             border-radius: 20px;
             overflow: hidden;
             box-shadow: 0 15px 40px rgba(0,0,0,0.5);
             animation: fadeIn 0.6s ease-out;
+            /* Transición suave para cambios de posición */
+            transition: all 0.3s ease; 
+        }
+
+        /* 🚀 DESPLAZAMIENTO A LA IZQUIERDA (Para PC/Laptops) */
+        @media (min-width: 992px) {
+            body {
+                justify-content: center; 
+            }
+            .card-lead {
+                margin-right: 420px; /* Empuja el formulario a la izquierda del centro */
+            }
         }
 
         @keyframes fadeIn {
@@ -131,10 +142,23 @@
                 <label class="form-label">Nombre Completo</label>
                 <input type="text" id="nombre" class="form-control" autocomplete="name" required>
             </div>
-            <div class="mb-4">
+            <div class="mb-3">
                 <label class="form-label">Número de Celular</label>
                 <input type="tel" id="telefono" class="form-control" autocomplete="tel" required>
             </div>
+
+            <!-- 🛑 CAMPOS FUTUROS (OCULTOS POR AHORA) -->
+            <div id="camposExtras" style="display: none;">
+                <div class="mb-3">
+                    <label class="form-label">Correo Electrónico</label>
+                    <input type="email" id="correo" class="form-control" placeholder="ejemplo@correo.com">
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">DNI / Documento</label>
+                    <input type="text" id="dni" class="form-control">
+                </div>
+            </div>
+
             <button type="submit" class="btn btn-send" id="btnSubmit">Enviar Registro</button>
         </form>
 
@@ -145,10 +169,10 @@
 </div>
 
 <script>
+    // URL de tu Apps Script con la nueva lógica de "Cola_Pendientes"
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzySJINUFttQonhOkh8Uj0SptgzAFKBcFas6pzc7DIAfRvDD1mSBR3t8K2RgitmCYJy/exec'; 
     const WA_URL = 'https://wa.link/6t5dim';
 
-    // CAPTURAR EL ORIGEN DE LA URL (Ej: ?id=RadioUno)
     const urlParams = new URLSearchParams(window.location.search);
     const ORIGEN_DINAMICO = urlParams.get('id') || 'Lead organico';
 
@@ -167,29 +191,36 @@
         const btn = document.getElementById('btnSubmit');
         const nombre = document.getElementById('nombre').value;
         const telefono = document.getElementById('telefono').value;
+        
+        // Capturar extras (aunque estén ocultos)
+        const correo = document.getElementById('correo').value || "No proporcionado";
+        const dni = document.getElementById('dni').value || "No proporcionado";
 
         btn.disabled = true;
         btn.innerText = "PROCESANDO...";
 
         Swal.fire({
-            title: 'Enviando...',
-            text: 'Estamos procesando tu solicitud',
+            title: '¡Casi listo!',
+            html: 'Estamos registrando tu solicitud...<br>No cierres esta ventana.',
             allowOutsideClick: false,
             didOpen: () => { Swal.showLoading(); }
         });
 
         try {
+            // El fetch ahora es más rápido porque el backend solo guarda en "Cola"
             await fetch(SCRIPT_URL, {
                 method: 'POST',
                 body: JSON.stringify({ 
                     nombre: nombre, 
                     telefono: telefono,
-                    origen: ORIGEN_DINAMICO // Enviar el origen detectado
+                    correo: correo,
+                    dni: dni,
+                    origen: ORIGEN_DINAMICO 
                 })
             });
             showSuccessModal();
         } catch (error) {
-            showSuccessModal(); 
+            showSuccessModal(); // Mostramos éxito igual para no frustrar al usuario
         } finally {
             btn.disabled = false;
             btn.innerText = "ENVIAR REGISTRO";
@@ -210,7 +241,11 @@
             allowOutsideClick: false
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: "track_click", label: "Click WA Post-Registro (" + ORIGEN_DINAMICO + ")" }) });
+                fetch(SCRIPT_URL, { 
+                    method: 'POST', 
+                    mode: 'no-cors', 
+                    body: JSON.stringify({ action: "track_click", label: "Click WA Post-Registro (" + ORIGEN_DINAMICO + ")" }) 
+                });
                 window.location.href = WA_URL;
             }
         });
